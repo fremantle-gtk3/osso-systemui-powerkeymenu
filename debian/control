@@ -1,8 +1,8 @@
 Source: osso-systemui-powerkeymenu
 Section: misc
 Maintainer: Ivaylo Dimmitrov <freemangordon@abv.bg>
-Build-Depends: debhelper (>= 5), pkg-config, libhildon1-dev, libgconf2-dev,
- libgtk2.0-dev, libdbus-1-dev, libglib2.0-dev, osso-systemui-dev, libx11-dev
+Build-Depends: debhelper (>= 5), pkg-config, libhildon1-dev | libhildon3-dev, libgconf2-dev,
+ libgtk2.0-dev | libgtk-3-dev, libdbus-1-dev, libglib2.0-dev, osso-systemui-dev, libx11-dev
 Priority: optional
 Standards-Version: 3.7.2
 

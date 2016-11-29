@@ -85,13 +85,17 @@ powerkeymenu_get_current_app_window (void)
   Atom realType;
   Window win_result = None;
   guchar *data_return = NULL;
+#if HAVE_GTK3
+  Display *dpy = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
+#else
+  Display *dpy = GDK_DISPLAY();
+#endif
 
-  status = XGetWindowProperty (GDK_DISPLAY(), GDK_ROOT_WINDOW (),
+  status = XGetWindowProperty (dpy, GDK_ROOT_WINDOW (),
                                atom_current_app_window, 0L, 16L,
                                0, XA_WINDOW, &realType, &format,
                                &n, &extra,
                                &data_return);
-
   if (status == Success && realType == XA_WINDOW && format == 32 && n == 1 && data_return != NULL)
   {
     win_result = ((Window*) data_return)[0];
@@ -112,8 +116,13 @@ powerkeymenu_get_window_class (Window w)
   unsigned long r_after;
   unsigned char *r_prop;
   gchar *rv = NULL;
+#if HAVE_GTK3
+  Display *dpy = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
+#else
+  Display *dpy = GDK_DISPLAY();
+#endif
 
-  if (Success == XGetWindowProperty (GDK_DISPLAY (), w, XA_WM_CLASS,
+  if (Success == XGetWindowProperty (dpy, w, XA_WM_CLASS,
                                      0, 8192,
                                      False, XA_STRING,
                                      &r_type, &r_fmt, &n_items, &r_after,
@@ -190,6 +199,12 @@ powerkeymenu_close_topmost_window(void)
   if(!desktop)
   {
     XEvent ev;
+#if HAVE_GTK3
+  Display *dpy = GDK_DISPLAY_XDISPLAY(gdk_display_get_default());
+#else
+  Display *dpy = GDK_DISPLAY();
+#endif
+
     memset(&ev, 0, sizeof(ev));
 
     ev.xclient.type         = ClientMessage;
@@ -199,8 +214,8 @@ powerkeymenu_close_topmost_window(void)
     ev.xclient.data.l[0]    = CurrentTime;
     ev.xclient.data.l[1]    = GDK_WINDOW_XID (gdk_get_default_root_window ());
 
-    XSendEvent (GDK_DISPLAY(), GDK_ROOT_WINDOW(), False, SubstructureRedirectMask, &ev);
-    XSync(GDK_DISPLAY(), False);
+    XSendEvent (dpy, GDK_ROOT_WINDOW(), False, SubstructureRedirectMask, &ev);
+    XSync(dpy, False);
   }
 
   gdk_flush();

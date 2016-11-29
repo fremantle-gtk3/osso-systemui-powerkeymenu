@@ -1,3 +1,11 @@
+HILDON_FLAGS := ""
+
+ifeq (1, $(shell pkg-config --exists hildon-1 && echo 1))
+	HILDON_FLAGS := $(shell pkg-config --libs --cflags hildon-1)
+else
+	HILDON_FLAGS := $(shell pkg-config --libs --cflags hildon-3) -DHAVE_GTK3
+endif
+
 all: libsystemuiplugin_power_key_menu.so
 
 clean:
@@ -10,6 +18,6 @@ install: libsystemuiplugin_power_key_menu.so
 	install -m 644 systemui.xml $(DESTDIR)/etc/systemui
 
 libsystemuiplugin_power_key_menu.so: osso-systemui-powerkeymenu.c xmlparser.c ezxml/ezxml.c 
-	$(CC) $^ -o $@ -shared -Wall $(CFLAGS) $(LDFLAGS) -I./ezxml -I./include $(shell pkg-config --libs --cflags osso-systemui hildon-1 gconf-2.0 gtk+-2.0 dbus-1 glib-2.0 x11) -L/usr/lib/hildon-desktop -Wl,-soname -Wl,$@ -Wl,-rpath -Wl,/usr/lib/hildon-desktop
+	$(CC) $^ -o $@ -shared -Wall $(CFLAGS) $(LDFLAGS) -I./ezxml -I./include $(HILDON_FLAGS) $(shell pkg-config --libs --cflags osso-systemui gconf-2.0 dbus-1 glib-2.0 x11) -fPIC -L/usr/lib/hildon-desktop -Wl,-soname -Wl,$@ -Wl,-rpath -Wl,/usr/lib/hildon-desktop
 
 .PHONY: all clean install
